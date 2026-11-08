@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import Mock
 
-from ingredient import Ingredient
+from burgers.ingredient import Ingredient
 
 from test_data import (
     EXPECTED_RECEIPT_WITHOUT_INGREDIENTS,

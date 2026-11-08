@@ -1,9 +1,9 @@
 import pytest
 from unittest.mock import Mock
 
-from burger import Burger
-from bun import Bun
-from ingredient import Ingredient
+from burgers.burger import Burger
+from burgers.bun import Bun
+from burgers.ingredient import Ingredient
 
 from test_data import (
     BUN_NAME,

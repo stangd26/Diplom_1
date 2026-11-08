@@ -59,7 +59,7 @@ pytest
 
 Для запуска тестов с измерением покрытия класса Burger:
 
-python -m pytest --cov=burger --cov-report=term-missing
+python -m pytest --cov=burgers.burger --cov-report=term-missing tests
 
 
 ### Что проверяют тесты
