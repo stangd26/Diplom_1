@@ -1,9 +1,22 @@
-
 import pytest
 from unittest.mock import Mock
 
 from ingredient import Ingredient
 
+from test_data import (
+    EXPECTED_RECEIPT_WITHOUT_INGREDIENTS,
+    EXPECTED_RECEIPT_WITH_SAUCE_AND_FILLING,
+    SAUCE_NAME,
+    FILLING_NAME,
+    SAUSAGE_NAME,
+    EXPECTED_BURGER_PRICE_WITHOUT_INGREDIENTS,
+    EXPECTED_BURGER_PRICE_WITH_ONE_INGREDIENT,
+    EXPECTED_BURGER_PRICE_WITH_SAUCE_AND_FILLING,
+    EXPECTED_BURGER_PRICE_WITH_THREE_INGREDIENTS,
+    FIRST_INGREDIENT,
+    SECOND_INGREDIENT,
+    THIRD_INGREDIENT
+)
 
 class TestBurger:
 
@@ -30,9 +43,9 @@ class TestBurger:
         # Для каждого индекса задаём ожидаемый порядок оставшихся ингредиентов.
         "index, expected",
         [
-            (0, ["cutlet", "sausage"]),
-            (1, ["hot sauce", "sausage"]),
-            (2, ["hot sauce", "cutlet"]),
+            (0, [FILLING_NAME, SAUSAGE_NAME]),
+            (1, [SAUCE_NAME, SAUSAGE_NAME]),
+            (2, [SAUCE_NAME, FILLING_NAME]),
         ],
     )
     def test_remove_ingredient(
@@ -41,7 +54,7 @@ class TestBurger:
         # Создаём третий ингредиент, чтобы проверить удаление
         # из разных позиций.
         sausage = Mock(spec=Ingredient)
-        sausage.get_name.return_value = "sausage"
+        sausage.get_name.return_value = SAUSAGE_NAME
 
         # Подготавливаем список из трёх ингредиентов.
         burger.ingredients = [sauce, filling, sausage]
@@ -58,7 +71,7 @@ class TestBurger:
     def test_move_ingredient(self, burger, sauce, filling):
         # Подготавливаем список ингредиентов.
         sausage = Mock(spec=Ingredient)
-        sausage.get_name.return_value = "sausage"
+        sausage.get_name.return_value = SAUSAGE_NAME
         burger.ingredients = [sauce, filling, sausage]
 
         # Перемещаем соус с позиции 0 на позицию 2.
@@ -72,10 +85,10 @@ class TestBurger:
         # Цена булочки всегда 100, а булочек в бургере две.
         "ingredient_prices, expected_price",
         [
-            ([], 200),               # Только две булочки.
-            ([100], 300),            # Булочки и один ингредиент.
-            ([100, 200], 500),       # Булочки и два ингредиента.
-            ([100, 200, 300], 800),  # Булочки и три ингредиента.
+            ([], EXPECTED_BURGER_PRICE_WITHOUT_INGREDIENTS),               # Только две булочки.
+            ([FIRST_INGREDIENT], EXPECTED_BURGER_PRICE_WITH_ONE_INGREDIENT),            # Булочки и один ингредиент.
+            ([FIRST_INGREDIENT, SECOND_INGREDIENT], EXPECTED_BURGER_PRICE_WITH_SAUCE_AND_FILLING),       # Булочки и два ингредиента.
+            ([FIRST_INGREDIENT, SECOND_INGREDIENT, THIRD_INGREDIENT], EXPECTED_BURGER_PRICE_WITH_THREE_INGREDIENTS),  # Булочки и три ингредиента.
         ],
     )
     def test_get_price(
@@ -104,16 +117,7 @@ class TestBurger:
         # Проверяем формирование чека для бургера без ингредиентов.
         burger.set_buns(bun)
 
-        # Задаём ожидаемый текст чека целиком,
-        # включая переносы строк и стоимость.
-        expected_receipt = (
-            "(==== black bun ====)\n"
-            "(==== black bun ====)\n"
-            "\n"
-            "Price: 200"
-        )
-
-        assert burger.get_receipt() == expected_receipt
+        assert burger.get_receipt() == EXPECTED_RECEIPT_WITHOUT_INGREDIENTS
 
     def test_get_receipt_with_sauce_and_filling(
         self, burger, bun, sauce, filling
@@ -123,15 +127,7 @@ class TestBurger:
         burger.add_ingredient(sauce)
         burger.add_ingredient(filling)
 
-        # Проверяем форматирование типов в нижнем регистре,
-        # названия ингредиентов, их порядок и итоговую цену.
-        expected_receipt = (
-            "(==== black bun ====)\n"
-            "= sauce hot sauce =\n"
-            "= filling cutlet =\n"
-            "(==== black bun ====)\n"
-            "\n"
-            "Price: 500"
+        assert (
+            burger.get_receipt()
+            == EXPECTED_RECEIPT_WITH_SAUCE_AND_FILLING
         )
-
-        assert burger.get_receipt() == expected_receipt
